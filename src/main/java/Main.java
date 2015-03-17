@@ -74,17 +74,28 @@ public class Main extends HttpServlet {
       AmazonS3 s3 = new AmazonS3Client(credentials);
       Region usWest2 = Region.getRegion(Regions.US_WEST_2);
       s3.setRegion(usWest2);
-      
+      InputStream input = null;
       for (Bucket bucket : s3.listBuckets()) {
           //resp.getWriter().print(" - " + bucket.getName());
           if (bucket.getName().equals(bucketName)){
         	  //resp.getWriter().print("Downloading an object");
               S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
               //resp.getWriter().print("Content-Type: "  + object.getObjectMetadata().getContentType());
-              //resp.getWriter().print("<br>");
-              displayTextInputStream(object.getObjectContent());
+              resp.getWriter().print("<br>");
+              input= object.getObjectContent();
           }
       }
+      
+      
+      
+      BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+      while (true) {
+          String line = reader.readLine();
+          if (line == null) break;
+
+          resp.getWriter().print("    " + line + "<br>");
+      }
+      resp.getWriter().print("<br>");
       
 	  
     //resp.getWriter().print("Hello from Java! ?????????");
