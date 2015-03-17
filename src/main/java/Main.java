@@ -37,13 +37,16 @@ public class Main extends HttpServlet {
 	
 	
   @Override
+/*  Our Audit data is stored on Amazon S3. 
+ *  doGet method will connect Ameazon S3, extract data from S3 and show in heroku website
+*/  
+  
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 	  
 	  AWSCredentials credentials = null;
 	  try{
 		  credentials = new BasicAWSCredentials(System.getenv("S3_KEY"),System.getenv("S3_SECRET"));
-
 	  }catch (Exception e){
 		  throw new AmazonClientException(e);
 	  }
@@ -56,7 +59,7 @@ public class Main extends HttpServlet {
           if (bucket.getName().equals(bucketName)){
               S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
               resp.getWriter().print("<br>");
-              input= object.getObjectContent();
+              input = object.getObjectContent();
           }
       }
       
@@ -71,87 +74,6 @@ public class Main extends HttpServlet {
       }
   }
 
-  
-/*  private void showHome(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-
-	  AWSCredentials credentials = null;
-	  try{
-		  credentials = new BasicAWSCredentials(System.getenv("S3_KEY"),System.getenv("S3_SECRET"));
-
-	  }catch (Exception e){
-		  throw new AmazonClientException(e);
-	  }
-	  
-      String bucketName = "medidatasiyang";
-      String key = "sandbox_audits_sample.json";
-
-      AmazonS3 s3 = new AmazonS3Client(credentials);
-      Region usWest2 = Region.getRegion(Regions.US_WEST_2);
-      s3.setRegion(usWest2);
-      InputStream input = null;
-      for (Bucket bucket : s3.listBuckets()) {
-          //resp.getWriter().print(" - " + bucket.getName());
-          if (bucket.getName().equals(bucketName)){
-        	  //resp.getWriter().print("Downloading an object");
-              S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
-              //resp.getWriter().print("Content-Type: "  + object.getObjectMetadata().getContentType());
-              resp.getWriter().print("<br>");
-              input= object.getObjectContent();
-          }
-      }
-      
-      
-      
-      BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-      while (true) {
-          String line = reader.readLine();
-          if (line == null) break;
-
-          resp.getWriter().print("    " + line + "<br>");
-      }
-      resp.getWriter().print("<br>");
-      
-	  
-    //resp.getWriter().print("Hello from Java! ?????????");
-  }*/
-
-/*  private void showDatabase(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {	  
-    Connection connection = null;
-    try {
-      connection = getConnection();
-
-      Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-      stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-      ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
-
-      String out = "Hello!\n";
-      while (rs.next()) {
-          out += "Read from DB: " + rs.getTimestamp("tick") + "\n";
-      }
-
-      resp.getWriter().print(out);
-    } catch (Exception e) {
-      resp.getWriter().print("There was an error: " + e.getMessage());
-    } finally {
-      if (connection != null) try{connection.close();} catch(SQLException e){}
-    }
-  }
-*/
-  
-/*  private Connection getConnection() throws URISyntaxException, SQLException {
-    URI dbUri = new URI(System.getenv("DATABASE_URL"));
-
-    String username = dbUri.getUserInfo().split(":")[0];
-    String password = dbUri.getUserInfo().split(":")[1];
-    int port = dbUri.getPort();
-
-    String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + port + dbUri.getPath();
-
-    return DriverManager.getConnection(dbUrl, username, password);
-  }*/
 
   public static void main(String[] args) throws Exception {
     Server server = new Server(Integer.valueOf(System.getenv("PORT")));
@@ -161,16 +83,5 @@ public class Main extends HttpServlet {
     context.addServlet(new ServletHolder(new Main()),"/*");
     server.start();
     server.join();
-  }
-  
-  private static void displayTextInputStream(InputStream input) throws IOException {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-      while (true) {
-          String line = reader.readLine();
-          if (line == null) break;
-
-          System.out.println("    " + line);
-      }
-      System.out.println();
   }
 }
