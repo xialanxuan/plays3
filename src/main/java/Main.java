@@ -32,17 +32,14 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 public class Main extends HttpServlet {
-/*  @Override
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
-    if (req.getRequestURI().endsWith("/db")) {
-      showDatabase(req,resp);
-    } else {
       showHome(req,resp);
-    }
+    
   }
-*/
+
   
   private void showHome(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
