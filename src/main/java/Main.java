@@ -22,7 +22,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.auth.BasicAWSCredentials;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +32,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 public class Main extends HttpServlet {
-  @Override
+/*  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
@@ -43,7 +42,7 @@ public class Main extends HttpServlet {
       showHome(req,resp);
     }
   }
-
+*/
   
   private void showHome(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
@@ -53,24 +52,12 @@ public class Main extends HttpServlet {
 		  credentials = new BasicAWSCredentials(System.getenv("S3_KEY"),System.getenv("S3_SECRET"));
 
 	  }catch (Exception e){
-		  throw new AmazonClientException(
-    
-                  e);
+		  throw new AmazonClientException(e);
 	  }
 	  
       String bucketName = "medidatasiyang";
       String key = "sandbox_audits_sample.json";
 
-/*	  AWSCredentials credentials = null;
-           try {
-          credentials = new ProfileCredentialsProvider("default").getCredentials();
-      } catch (Exception e) {
-          throw new AmazonClientException(
-                  "Cannot load the credentials from the credential profiles file. " +
-                  "Please make sure that your credentials file is at the correct " +
-                  "location (/Users/siyang/.aws/credentials), and is in valid format.",
-                  e);
-      }  */
       AmazonS3 s3 = new AmazonS3Client(credentials);
       Region usWest2 = Region.getRegion(Regions.US_WEST_2);
       s3.setRegion(usWest2);
@@ -101,12 +88,8 @@ public class Main extends HttpServlet {
     //resp.getWriter().print("Hello from Java! ?????????");
   }
 
-  private void showDatabase(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-	  
-	  
-	  
-	  
+/*  private void showDatabase(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {	  
     Connection connection = null;
     try {
       connection = getConnection();
@@ -128,9 +111,9 @@ public class Main extends HttpServlet {
       if (connection != null) try{connection.close();} catch(SQLException e){}
     }
   }
-
+*/
   
-  private Connection getConnection() throws URISyntaxException, SQLException {
+/*  private Connection getConnection() throws URISyntaxException, SQLException {
     URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
     String username = dbUri.getUserInfo().split(":")[0];
@@ -140,7 +123,7 @@ public class Main extends HttpServlet {
     String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + port + dbUri.getPath();
 
     return DriverManager.getConnection(dbUrl, username, password);
-  }
+  }*/
 
   public static void main(String[] args) throws Exception {
     Server server = new Server(Integer.valueOf(System.getenv("PORT")));
