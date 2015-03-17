@@ -32,16 +32,47 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 public class Main extends HttpServlet {
+    private final String bucketName = "medidatasiyang";
+    private final String key = "sandbox_audits_sample.json";
+	
+	
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
+	  
+	  AWSCredentials credentials = null;
+	  try{
+		  credentials = new BasicAWSCredentials(System.getenv("S3_KEY"),System.getenv("S3_SECRET"));
 
-      showHome(req,resp);
-    
+	  }catch (Exception e){
+		  throw new AmazonClientException(e);
+	  }
+	  
+      AmazonS3 s3 = new AmazonS3Client(credentials);
+      Region usWest2 = Region.getRegion(Regions.US_WEST_2);
+      s3.setRegion(usWest2);
+      InputStream input = null;
+      for (Bucket bucket : s3.listBuckets()) {
+          if (bucket.getName().equals(bucketName)){
+              S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
+              resp.getWriter().print("<br>");
+              input= object.getObjectContent();
+          }
+      }
+      
+      if(input != null){
+    	  BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+    	  while (true) {
+    		  String line = reader.readLine();
+    		  if (line == null) break;
+    		  resp.getWriter().print("    " + line + "<br>");
+    	  }
+    	  resp.getWriter().print("<br>");
+      }
   }
 
   
-  private void showHome(HttpServletRequest req, HttpServletResponse resp)
+/*  private void showHome(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
 	  AWSCredentials credentials = null;
@@ -83,7 +114,7 @@ public class Main extends HttpServlet {
       
 	  
     //resp.getWriter().print("Hello from Java! ?????????");
-  }
+  }*/
 
 /*  private void showDatabase(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {	  
