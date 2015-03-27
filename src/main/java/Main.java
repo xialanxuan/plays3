@@ -30,10 +30,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.*;
+import com.google.gson.Gson;  
+import com.google.gson.JsonArray;  
+import com.google.gson.JsonElement;  
+import com.google.gson.JsonObject;  
+import com.google.gson.JsonParser; 
 
 public class Main extends HttpServlet {
     private final String bucketName = "medidatasiyang";
-    private final String key = "sandbox_audits_sample.json";
+    private final String key = "mockData.json";
 	
 	
   @Override
@@ -65,15 +71,51 @@ public class Main extends HttpServlet {
       
       if(input != null){
     	  BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+    	  StringBuilder json = new StringBuilder();
     	  while (true) {
     		  String line = reader.readLine();
     		  if (line == null) break;
-    		  resp.getWriter().print("    " + line + "<br>");
+    		  json.append(line);
+    		  //resp.getWriter().print("    " + line + "<br>");
     	  }
-    	  resp.getWriter().print("<br>");
-      }
+    	  //resp.getWriter().print(json.toString());
+          ArrayList<ArrayList<String>> result = processJson(json.toString());
+          resp.getWriter().print(result);
+         // resp.getWriter().print(result.get(i));
+      }      
   }
-
+  
+  public ArrayList<ArrayList<String>> processJson(String json){
+	  ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+	  Gson gson = new Gson();  
+      JsonParser parser = new JsonParser();  
+      JsonArray jsonArray = parser.parse(json).getAsJsonArray();
+      for(int i = 0 ; i < jsonArray.size(); i++){
+    	  JsonObject singleObject = jsonArray.get(i).getAsJsonObject();
+    	  JsonObject insideWhichChanged = singleObject.getAsJsonObject("which_changed");
+    	  JsonArray arrayInsideChanges = insideWhichChanged.getAsJsonArray("changes");
+    	  
+    	  //get all the field name into result
+		  if(result.isEmpty() && arrayInsideChanges.size() > 0){
+    		  ArrayList<String> fieldname = new ArrayList<String>();
+			  for(int j = 0 ; j < arrayInsideChanges.size(); j ++){	  
+				  JsonObject objInsideChanges = arrayInsideChanges.get(j).getAsJsonObject();
+				  JsonElement objFieldName = objInsideChanges.get("field");
+				  fieldname.add(objFieldName.getAsString());
+	    	  }
+			  result.add(new ArrayList(fieldname));
+		  }		  
+		  ArrayList<String> seq = new ArrayList<String>();    	  
+    	  for(int k = 0 ; k < arrayInsideChanges.size(); k ++){
+    		  JsonObject objInsideChanges = arrayInsideChanges.get(k).getAsJsonObject();
+    		  JsonElement objNum = objInsideChanges.get("new");
+    		  seq.add(objNum.getAsString());
+    	   }
+		   result.add(new ArrayList(seq));
+		   seq = new ArrayList<String>();
+	  }
+      return result;
+  }
 
   public static void main(String[] args) throws Exception {
     Server server = new Server(Integer.valueOf(System.getenv("PORT")));
