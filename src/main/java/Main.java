@@ -80,11 +80,17 @@ public class Main extends HttpServlet {
     	  }
     	  //resp.getWriter().print(json.toString());
           ArrayList<ArrayList<String>> result = processJson(json.toString());
-          resp.getWriter().print(result);
-         // resp.getWriter().print(result.get(i));
+          //resp.getWriter().print(result);
+          ArrayList<Entry> heartRate = CalculateAverage.calculateAverage(result, 0, 3, 15);
+          resp.getWriter().print(heartRate);
       }      
   }
   
+  /*Gson is a Java library that can be used to convert Java Objects into their JSON representation. 
+  It can also be used to convert a JSON string to an equivalent Java object. 
+  Gson can work with arbitrary Java objects including pre-existing objects that you do not have source-code of.
+  This method will convert json to a ArrayList
+  */
   public ArrayList<ArrayList<String>> processJson(String json){
 	  ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 	  Gson gson = new Gson();  

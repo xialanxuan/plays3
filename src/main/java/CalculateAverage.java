@@ -10,10 +10,10 @@ public class CalculateAverage {
 	 ArrayList<Entry> average=new ArrayList<Entry>();
 	 for(int i=1;i<incomingData.size();i=i+n){
 		 double total=0;
-		 for (int j=i;j<=n;j++){
-		 total =total+Double.parseDouble(incomingData.get(j).get(dataIndex));		 
+		 for (int j=0;j<n;j++){
+		 total =total+Double.parseDouble(incomingData.get(i+j).get(dataIndex));
 		 }		 
-		 average.add(new entry(incomingData.get(i).get(timeIndex),Double.toString(total/n)));	
+		 average.add(new Entry(incomingData.get(i).get(timeIndex),Double.toString(total/n)));
 	 } 	
 	 return average;
 	}
